@@ -99,7 +99,7 @@ __Properties__
 <a name="statusbar_clearinterval"></a>
 __StatusBar#clearInterval() : undefined__
 
-When you need to cancel the status bar rendering because the file transfer was aborted due to an error or any other reason, call to this function to clear the timer, if it was set with the `frequency` option.
+When you need to cancel the status bar rendering because the file transfer has been aborted due to an error or any other reason, call to this function to clear the timer. This is only needed when the `frequency` option is configured.
 
 ---
 
