@@ -36,6 +36,9 @@ var bar = statusBar.create ({
 
 //Or simply pipe() things to it!
 stream.pipe (bar);
+
+//It will print something like this
+//a-file                  17.8 MiB   23.6M/s 00:13 [#·······················]   6%
 ```
 
 #### Why you should try this module ####
