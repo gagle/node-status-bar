@@ -73,7 +73,7 @@ Options:
 - __barLength__ - _Number_  
   The length of the progress bar. Default is `24`.
 - __frequency__ - _Number_  
-  The writing frequency. If you don't configure a `write` function, this option is ignored. By default there's no value, so each time you call to [update()](#statusbar_update), the status bar will be printed. This is the most accurate behaviour but it slowers so much the file transfer. I recommend to render the status bar every 200ms.
+  The writing frequency. If you don't configure a `write` function, this option is ignored. By default there's no value, so each time you call to [update()](#statusbar_update), the status bar is printed. This is the most accurate behaviour but it slows down the file transfer very much. I recommend to render the status bar every 200ms, remember that a status bar is purely informational.
 - __write__ - _Function_  
 	Function that is called when the status bar needs to be printed.
 - __finish__ - _Function_  
