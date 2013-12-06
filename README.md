@@ -143,5 +143,5 @@ __StatusBar#stats__
   The completion percentage. Length: 4. Example:
 
   ```
-   89%
+  100%
   ```
