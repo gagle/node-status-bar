@@ -140,7 +140,7 @@ __StatusBar#stats__
   ##########··············
   ```
 - __percentage__ - _String_  
-  The completion pertentage. Length: 4. Example:
+  The completion percentage. Length: 4. Example:
 
   ```
    89%
