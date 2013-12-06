@@ -14,24 +14,24 @@ status-bar
 var statusBar = require ("status-bar");
 
 var bar = statusBar.create ({
-	//Total file size
-	total: size,
-	//Writing frequency
-	frequency: 200,
-	//Writing function
-	write: function (){
-		//Print the status bar as you like
-		process.stdout.write (filename + " " + this.stats.size + " " +
-				this.stats.speed + " " + this.stats.eta + " [" +
-				this.stats.progress + "] " + this.stats.percentage);
-		process.stdout.cursorTo (0);
-	}
+  //Total file size
+  total: size,
+  //Writing frequency
+  frequency: 200,
+  //Writing function
+  write: function (){
+    //Print the status bar as you like
+    process.stdout.write (filename + " " + this.stats.size + " " +
+        this.stats.speed + " " + this.stats.eta + " [" +
+        this.stats.progress + "] " + this.stats.percentage);
+    process.stdout.cursorTo (0);
+  }
 });
 
 //Update the status bar when you send or receive a chunk of a file
 .on ("some-event", function (chunk){
-	//You can pass any object that contains a length property or a simple number
-	bar.update (chunk);
+  //You can pass any object that contains a length property or a simple number
+  bar.update (chunk);
 });
 
 //Or simply pipe() things to it!
