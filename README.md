@@ -97,7 +97,7 @@ __Properties__
 <a name="statusbar_update"></a>
 __StatusBar#update(chunk) : undefined__
 
-Updates the status bar. `chunk` can be any object with a length property or a simple number.
+Updates the status bar. The `chunk` can be any object with a length property or a simple number.
 
 ---
 
