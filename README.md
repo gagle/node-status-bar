@@ -107,12 +107,32 @@ __StatusBar#stats__
 `stats` is an object that contains the current state of the status bar. It is updated each time you [update()](statusbar_update) the status bar. All the following properties are strings and have a fixed length.
 
 - __size__ - _String_  
-  The current size of the file that is being received/sent. Length: 10. Example: `  12.5 MiB`.
+  The current size of the file that is being received/sent. Length: 10. Example:
+
+  ```
+    12.5 MiB
+  ```
 - __speed__ - _String_  
-  The current file transfer speed. Length: 9. Example: `   5.3M/s`.
+  The current file transfer speed. Length: 9. Example:
+
+  ```
+     5.3M/s
+  ```
 - __eta__ - _String_  
-  The estimated remaining time. Length: 5. Example: `01:45` (<min>:<sec>).
+  The estimated remaining time. Length: 5. Example (_min_:_sec_):
+
+  ```
+  01:45
+  ```
 - __progress__ - _String_  
-  A progress bar with the current file completion. Length: configured with the `barLength` option. Example: `##########··············`.
+  A progress bar with the current file completion. Length: configured with the `barLength` option. Example:
+
+  ```
+  ##########··············
+  ```
 - __percentage__ - _String_  
-  The completion pertentage. Length: 4. Example: ` 89%`.
+  The completion pertentage. Length: 4. Example:
+
+  ```
+   89%
+  ```
