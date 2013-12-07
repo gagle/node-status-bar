@@ -22,8 +22,8 @@ var bar = statusBar.create ({
   write: function (){
     //Print the status bar as you like
     process.stdout.write (filename + " " + this.stats.size + " " +
-        this.stats.speed + " " + this.stats.eta + " [" +
-        this.stats.progress + "] " + this.stats.percentage);
+        this.stats.speed + " " + this.stats.eta + " [" + this.stats.progress +
+        "] " + this.stats.percentage);
     process.stdout.cursorTo (0);
   }
 });
@@ -46,6 +46,54 @@ stream.pipe (bar);
 - It doesn't print anything, it just formats the data and you decide how you want to print the status bar. Other modules similar to this use the `readline` module which is very unstable and may cause problems if you are already using a `readline` instance.
 - You decide how to arrange the elements of the status bar. Because each element has a fixed length you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
+
+#### Render function examples ####
+
+- `pacman` from Arch Linux:
+  
+  ```
+  a-file                  17.8 MiB   23.6M/s 00:13 [#·······················]   6%
+  ```
+
+  ```javascript
+  var formatFilename = function (filename){
+    //80 - 59
+    var filenameMaxLength = 21;
+    if (filename.length > filenameMaxLength){
+      filename = filename.slice (0, filenameMaxLength - 3) + "...";
+    }else{
+      var remaining = filenameMaxLength - filename.length;
+      while (remaining--){
+        filename += " ";
+      }
+    }
+    return filename;
+  };
+  
+  filename = formatFilename (filename);
+  
+  var write = function (){
+    process.stdout.write (filename + " " + this.stats.size + " " +
+        this.stats.speed + " " + this.stats.eta + " [" +
+        this.stats.progress + "] " + this.stats.percentage);
+    process.stdout.cursorTo (0);
+  };
+  ```
+
+- `git clone`:
+  
+  ```
+  Receiving objects: 18% (56655992/311833402), 54.0 MiB | 26.7M/s
+  ```
+
+  ```javascript
+  var write = function (){
+    process.stdout.write ("Receiving objects: " + this.stats.percentage.trim () +
+        " (" + this.stats.current + "/" + this.stats.total + "), " +
+        this.stats.size.trim () + " | " + this.stats.speed.trim ());
+    process.stdout.cursorTo (0);
+  };
+  ```
 
 #### Functions ####
 
@@ -113,10 +161,34 @@ Updates the status bar. The `chunk` can be any object with a length property or 
 <a name="statusbar_stats"></a>
 __StatusBar#stats__
 
-`stats` is an object that contains the current state of the status bar. It is updated each time you [update()](statusbar_update) the status bar. All the following properties are strings and have a fixed length.
+`stats` is an object that contains the current state of the status bar. It is updated each time you [update()](statusbar_update) the status bar. All the following properties are strings and most of them have a fixed length.
 
+- __current__ - _String_  
+  The current file size. Length: variable. Example:
+
+  ```
+  1234
+  ```
+- __eta__ - _String_  
+  The estimated remaining time. Length: 5. Example (_min_:_sec_):
+
+  ```
+  01:45
+  ```
+- __percentage__ - _String_  
+  The completion percentage. Length: 4. Example:
+
+  ```
+  100%
+  ```
+- __progress__ - _String_  
+  A progress bar with the current file completion. Length: configured with the `barLength` option. Example:
+
+  ```
+  ##########··············
+  ```
 - __size__ - _String_  
-  The current size of the file that is being received/sent. Length: 10. Example:
+  The current formatted size of the file that is being received/sent. Length: 10. Example:
 
   ```
     12.5 MiB
@@ -127,21 +199,9 @@ __StatusBar#stats__
   ```
      5.3M/s
   ```
-- __eta__ - _String_  
-  The estimated remaining time. Length: 5. Example (_min_:_sec_):
+- __total__ - _String_  
+  The total file size. Length: variable. Example:
 
   ```
-  01:45
-  ```
-- __progress__ - _String_  
-  A progress bar with the current file completion. Length: configured with the `barLength` option. Example:
-
-  ```
-  ##########··············
-  ```
-- __percentage__ - _String_  
-  The completion percentage. Length: 4. Example:
-
-  ```
-  100%
+  5678
   ```
