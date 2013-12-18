@@ -1,6 +1,6 @@
 {
   "name": "status-bar",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "A status bar for file transfers",
   "keywords": ["status", "bar", "file", "transfer", "speed", "progress",
       "stream"],

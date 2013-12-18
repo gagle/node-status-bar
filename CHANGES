@@ -1,3 +1,31 @@
+v1.0.0 (xx Dec 2013)
+  Improved speed calculation with an exponential moving average. The speed
+      should be more stable without losing too much precision.
+  Improved estimated remaining time calculation.
+  Added handling for transfers hang up.
+  All the stats now contain raw data. The "stats" property has been removed. It
+    is now returned as an argument from the "render" function.
+  The "render" function is now mandatory.
+  Added formatting functions.
+  Added support for unpipe events. Now the timer is cancelled when the user
+    unpipes the stream.
+  Set a default frequency update of 200ms. The frequency cannot be null or 0.
+  Renamed options:
+    "write" to "render".
+    "barCompletion" to "progressBarComplete".
+    "barIncompletion" to "progressBarIncomplete".
+    "barLength" to "progressBarLength".
+  Renamed stats:
+    "eta" stat to "remainingTime".
+    "progress" to "progressBar".
+    "total" to "totalSize".
+    "current" to "currentSize".
+  Added stats:
+    "elapsedTime".
+    "remainingSize".
+  Renamed "clearInterval()" to "cancel()".
+  Minor bugfixes and improvements.
+
 v0.0.2 (07 Dec 2013)
   Added "current" and "total" stats.
 
