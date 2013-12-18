@@ -1,10 +1,8 @@
 v1.0.0 (xx Dec 2013)
   Improved speed calculation with an exponential moving average. The speed
-      should be more stable without losing too much precision.
-  Improved estimated remaining time calculation.
-  Added handling for transfers hang up.
+      should be more stable without losing too much accuracy.
   All the stats now contain raw data. The "stats" property has been removed. It
-    is now returned as an argument from the "render" function.
+    is now returned as an argument of the "render" function.
   The "render" function is now mandatory.
   Added formatting functions.
   Added support for unpipe events. Now the timer is cancelled when the user
