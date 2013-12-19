@@ -16,20 +16,21 @@ var statusBar = require ("status-bar");
 var bar = statusBar.create ({
   //Total file size
   total: size,
-  //Writing frequency
-  frequency: 200,
-  //Writing function
-  write: function (){
+  //Render function
+  render: function (stats){
     //Print the status bar as you like
-    process.stdout.write (filename + " " + this.stats.size + " " +
-        this.stats.speed + " " + this.stats.eta + " [" + this.stats.progress +
-        "] " + this.stats.percentage);
+    process.stdout.write (filename + " " + 
+        statusBar.format.storage (stats.currentSize) + " " +
+        statusBar.format.speed (stats.speed) + " " +
+        statusBar.format.time (stats.remainingTime) + " [" +
+        stats.progressBar + "] " +
+        statusBar.format.percentage (stats.percentage));
     process.stdout.cursorTo (0);
   }
 });
 
 //Update the status bar when you send or receive a chunk of a file
-.on ("some-event", function (chunk){
+obj.on ("some-event", function (chunk){
   //You can pass any object that contains a length property or a simple number
   bar.update (chunk);
 });
@@ -43,8 +44,8 @@ stream.pipe (bar);
 
 #### Why you should try this module ####
 
-- It doesn't print anything, it just formats the data and you decide how you want to print the status bar. Other modules similar to this use the `readline` module which is very unstable and may cause problems if you are already using a `readline` instance.
-- You decide how to arrange the elements of the status bar. Because each element has a fixed length you can format the status bar very easily.
+- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions with the `readline` module, which is very unstable and may cause problems if you are already using a `readline` instance.
+- You decide how format and arrange the elements of the status bar. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
 #### Render function examples ####
@@ -56,6 +57,8 @@ stream.pipe (bar);
   ```
 
   ```javascript
+  var statusBar = require ("status-bar");
+  
   var formatFilename = function (filename){
     //80 - 59
     var filenameMaxLength = 21;
@@ -72,12 +75,20 @@ stream.pipe (bar);
   
   filename = formatFilename (filename);
   
-  var write = function (){
-    process.stdout.write (filename + " " + this.stats.size + " " +
-        this.stats.speed + " " + this.stats.eta + " [" +
-        this.stats.progress + "] " + this.stats.percentage);
+  var render = function (stats){
+    process.stdout.write (filename + " " + 
+        statusBar.format.storage (stats.currentSize) + " " +
+        statusBar.format.speed (stats.speed) + " " +
+        statusBar.format.time (stats.remainingTime) + " [" +
+        stats.progressBar + "] " +
+        statusBar.format.percentage (stats.percentage));
     process.stdout.cursorTo (0);
   };
+  
+  var bar = statusBar.create ({
+    total: ...,
+    render: render
+  });
   ```
 
 - `git clone`:
@@ -87,17 +98,31 @@ stream.pipe (bar);
   ```
 
   ```javascript
-  var write = function (){
-    process.stdout.write ("Receiving objects: " + this.stats.percentage.trim () +
-        " (" + this.stats.current + "/" + this.stats.total + "), " +
-        this.stats.size.trim () + " | " + this.stats.speed.trim ());
+  var statusBar = require ("status-bar");
+  
+  var render = function (stats){
+    process.stdout.write ("Receiving objects: " +
+        statusBar.format.percentage (stats.percentage).trim () +
+        " (" + stats.currentSize + "/" + stats.totalSize + "), " +
+        statusBar.format.storage (stats.currentSize).trim () + " | " +
+        statusBar.format.speed (stats.speed).trim ());
     process.stdout.cursorTo (0);
   };
+  
+  
+  var bar = statusBar.create ({
+    total: ...,
+    render: render
+  });
   ```
 
 #### Functions ####
 
 - [_module_.create(options) : StatusBar](#create)
+- [_module_.format.percentage(percentage) : String](#format-percentage)
+- [_module_.format.speed(bytesPerSecond) : String](#format-speed)
+- [_module_.format.storage(bytes) : String](#format-storage)
+- [_module_.format.time(seconds) : String](#format-time)
 
 #### Objects ####
 
@@ -112,20 +137,92 @@ Returns a new [StatusBar](#statusbar_object) instance.
 
 Options:
 
-- __total__ - _Number_  
-  The total size of a file. This option is required.
-- __barComplete__ - _String_  
-  The character that shows completion progress. Default is `#`.
-- __barIncomplete__ - _String_  
-  The character that shows the remaining progress. Default is `·`.
-- __barLength__ - _Number_  
-  The length of the progress bar. Default is `24`.
-- __frequency__ - _Number_  
-  The writing frequency. If you don't configure a `write` function, this option is ignored. By default there's no value, so each time you call to [update()](#statusbar_update), the status bar is printed. This is the most accurate behaviour but it slows down the file transfer very much. I recommend to render the status bar every 200ms, remember that a status bar is purely informational.
-- __write__ - _Function_  
-	Function that is called when the status bar needs to be printed.
 - __finish__ - _Function_  
 	Function that is called when the file transfer has finished.
+- __frequency__ - _Number_  
+  The rendering frequency in milliseconds. It must be a positive value. Default is 200.
+- __progressBarComplete__ - _String_  
+  The character that shows completion progress. Default is `#`.
+- __progressBarIncomplete__ - _String_  
+  The character that shows the remaining progress. Default is `·`.
+- __progressBarLength__ - _Number_  
+  The length of the progress bar. Default is 24.
+- __render__ - _Function_  
+	Function that is called when the status bar needs to be printed. It is required. It receives the stats oject as an argument. All of its properties contain raw data (except the progress bar), so you need to format them. You can use the default formatting functions.
+
+  Properties:
+  
+  - __currentSize__ - _Number_  
+  The current size in bytes.
+  - __remainingSize__ - _Number_  
+  The remaining size in bytes.
+  - __totalSize__ - _Number_  
+  The total size in bytes.
+  - __percentage__ - _Number_  
+  The complete percentage. A number between 0 and 1.
+  - __speed__ - _Number_  
+  The estimated current speed in bytes per second.
+  - __elapsedTime__ - _Number_  
+  The elapsed time in seconds.
+  - __remainingTime__ - _Number_  
+  The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks or because the transfer it's hung up, it returns `undefined`.
+  - __progressBar__ - _String_  
+  The progress bar.
+
+  ```
+  ######··················
+  ```
+  
+- __total__ - _Number_  
+  The total size of the file. This option is required.
+
+---
+
+<a name="format-percentage"></a>
+___module_.format.percentage(percentage) : String__
+
+The percentage must be a number between 0 and 1. Result string length: 4.
+
+```javascript
+console.log (statusBar.format.percentage (0.5));
+// 50%
+```
+
+---
+
+<a name="format-speed"></a>
+___module_.format.speed(bytesPerSecond) : String__
+
+Speed in bytes per second. Result string length: 9.
+
+```javascript
+console.log (statusBar.format.speed (30098226));
+//  30.1M/s
+```
+
+---
+
+<a name="format-storage"></a>
+___module_.format.storage(bytes) : String__
+
+Result string length: 10.
+
+```javascript
+console.log (statusBar.format.storage (38546744));
+//  36.8 MiB
+```
+
+---
+
+<a name="format-time"></a>
+___module_.format.time(seconds) : String__
+
+Result string length: 5 (_min_:_sec_). If `seconds` is undefined it prints `--:--`.
+
+```javascript
+console.log (statusBar.format.time (63));
+//01:03
+```
 
 ---
 
@@ -134,18 +231,13 @@ __StatusBar__
 
 __Methods__
 
-- [StatusBar#clearInterval() : undefined](#statusbar_clearinterval)
+- [StatusBar#cancel() : undefined](#statusbar_cancel)
 - [StatusBar#update(chunk) : undefined](#statusbar_update)
-
-__Properties__
-
-- [StatusBar#stats](#statusbar_stats)
-
 
 ---
 
-<a name="statusbar_clearinterval"></a>
-__StatusBar#clearInterval() : undefined__
+<a name="statusbar_cancel"></a>
+__StatusBar#cancel() : undefined__
 
 When you need to cancel the status bar rendering because the file transfer has been aborted due to an error or any other reason, call to this function to clear the timer. This is only needed when the `frequency` option is configured.
 
@@ -155,53 +247,3 @@ When you need to cancel the status bar rendering because the file transfer has b
 __StatusBar#update(chunk) : undefined__
 
 Updates the status bar. The `chunk` can be any object with a length property or a simple number.
-
----
-
-<a name="statusbar_stats"></a>
-__StatusBar#stats__
-
-`stats` is an object that contains the current state of the status bar. It is updated each time you [update()](statusbar_update) the status bar. All the following properties are strings and most of them have a fixed length.
-
-- __current__ - _String_  
-  The current file size. Length: variable. Example:
-
-  ```
-  1234
-  ```
-- __eta__ - _String_  
-  The estimated remaining time. Length: 5. Example (_min_:_sec_):
-
-  ```
-  01:45
-  ```
-- __percentage__ - _String_  
-  The completion percentage. Length: 4. Example:
-
-  ```
-  100%
-  ```
-- __progress__ - _String_  
-  A progress bar with the current file completion. Length: configured with the `barLength` option. Example:
-
-  ```
-  ##########··············
-  ```
-- __size__ - _String_  
-  The current formatted size of the file that is being received/sent. Length: 10. Example:
-
-  ```
-    12.5 MiB
-  ```
-- __speed__ - _String_  
-  The current file transfer speed. Length: 9. Example:
-
-  ```
-     5.3M/s
-  ```
-- __total__ - _String_  
-  The total file size. Length: variable. Example:
-
-  ```
-  5678
-  ```

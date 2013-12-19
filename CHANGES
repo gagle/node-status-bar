@@ -1,13 +1,14 @@
-v1.0.0 (xx Dec 2013)
+v1.0.0 (19 Dec 2013)
   Improved speed calculation with an exponential moving average. The speed
       should be more stable without losing too much accuracy.
   All the stats now contain raw data. The "stats" property has been removed. It
     is now returned as an argument of the "render" function.
-  The "render" function is now mandatory.
+  Added transfer hang up handling.
   Added formatting functions.
   Added support for unpipe events. Now the timer is cancelled when the user
     unpipes the stream.
   Set a default frequency update of 200ms. The frequency cannot be null or 0.
+  The "render" function is now mandatory.
   Renamed options:
     "write" to "render".
     "barCompletion" to "progressBarComplete".
