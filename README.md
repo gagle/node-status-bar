@@ -169,9 +169,9 @@ Options:
   - __progressBar__ - _String_  
   The progress bar.
 
-  ```
-  ######··················
-  ```
+    ```
+    ######··················
+    ```
   
 - __total__ - _Number_  
   The total size of the file. This option is required.
