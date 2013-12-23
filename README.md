@@ -149,7 +149,7 @@ Options:
 - __progressBarLength__ - _Number_  
   The length of the progress bar. Default is 24.
 - __render__ - _Function_  
-	Function that is called when the status bar needs to be printed. It is required. It receives the stats oject as an argument. All of its properties contain raw data (except the progress bar), so you need to format them. You can use the default formatting functions.
+	Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. All of its properties contain raw data (except the progress bar), so you need to format them. You can use the default formatting functions.
 
   Properties:
   
