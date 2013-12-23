@@ -44,7 +44,7 @@ stream.pipe (bar);
 
 #### Why you should try this module ####
 
-- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions with the `readline` module, which is very unstable and may cause problems if you are already using a `readline` instance. Therefore, it is perfectly integrated with node-webkit, so you can render the status bar in HTML or even in WebGL.
+- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions with the `readline` module, which is very unstable and may cause problems if you are already using a `readline` instance. Therefore, it is perfectly integrated with node-webkit, so you can render the status bar in HTML.
 - You decide how format and arrange the elements of the status bar. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
