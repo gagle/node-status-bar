@@ -1,3 +1,8 @@
+v1.1.0 (24 Dec 2013)
+  The default formatting functions are now accessible throw the pointer "this".
+  Added a new formatting function "progressBar".
+  Removed "progressBar" stat.
+
 v1.0.0 (19 Dec 2013)
   Improved speed calculation with an exponential moving average. The speed
       should be more stable without losing too much accuracy.

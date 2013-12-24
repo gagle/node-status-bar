@@ -20,11 +20,11 @@ var bar = statusBar.create ({
   render: function (stats){
     //Print the status bar as you like
     process.stdout.write (filename + " " + 
-        statusBar.format.storage (stats.currentSize) + " " +
-        statusBar.format.speed (stats.speed) + " " +
-        statusBar.format.time (stats.remainingTime) + " [" +
-        stats.progressBar + "] " +
-        statusBar.format.percentage (stats.percentage));
+        this.format.storage (stats.currentSize) + " " +
+        this.format.speed (stats.speed) + " " +
+        this.format.time (stats.remainingTime) + " [" +
+        this.format.progressBar (stats.percentage) + "] " +
+        this.format.percentage (stats.percentage));
     process.stdout.cursorTo (0);
   }
 });
@@ -46,7 +46,7 @@ stream.pipe (bar);
 
 - It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions with the `readline` module, which is very unstable and may cause problems if you are already using a `readline` instance.
 - The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) sending it via websockets or with [node-webkit](https://github.com/rogerwang/node-webkit), etc.
-- You decide how format and arrange the elements of the status bar. The default formatting functions have a fixed length, so you can format the status bar very easily.
+- You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
 #### Render function examples ####
@@ -78,11 +78,11 @@ stream.pipe (bar);
   
   var render = function (stats){
     process.stdout.write (filename + " " + 
-        statusBar.format.storage (stats.currentSize) + " " +
-        statusBar.format.speed (stats.speed) + " " +
-        statusBar.format.time (stats.remainingTime) + " [" +
-        stats.progressBar + "] " +
-        statusBar.format.percentage (stats.percentage));
+        this.format.storage (stats.currentSize) + " " +
+        this.format.speed (stats.speed) + " " +
+        this.format.time (stats.remainingTime) + " [" +
+        this.format.progressBar (stats.percentage) + "] " +
+        this.format.percentage (stats.percentage));
     process.stdout.cursorTo (0);
   };
   
@@ -103,10 +103,10 @@ stream.pipe (bar);
   
   var render = function (stats){
     process.stdout.write ("Receiving objects: " +
-        statusBar.format.percentage (stats.percentage).trim () +
+        this.format.percentage (stats.percentage).trim () +
         " (" + stats.currentSize + "/" + stats.totalSize + "), " +
-        statusBar.format.storage (stats.currentSize).trim () + " | " +
-        statusBar.format.speed (stats.speed).trim ());
+        this.format.storage (stats.currentSize).trim () + " | " +
+        this.format.speed (stats.speed).trim ());
     process.stdout.cursorTo (0);
   };
   
@@ -120,10 +120,6 @@ stream.pipe (bar);
 #### Functions ####
 
 - [_module_.create(options) : StatusBar](#create)
-- [_module_.format.percentage(percentage) : String](#format-percentage)
-- [_module_.format.speed(bytesPerSecond) : String](#format-speed)
-- [_module_.format.storage(bytes) : String](#format-storage)
-- [_module_.format.time(seconds) : String](#format-time)
 
 #### Objects ####
 
@@ -149,9 +145,9 @@ Options:
 - __progressBarLength__ - _Number_  
   The length of the progress bar. Default is 24.
 - __render__ - _Function_  
-	Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. All of its properties contain raw data (except the progress bar), so you need to format them. You can use the default formatting functions.
+	Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. All of its properties contain raw data, so you need to format them. You can use the default formatting functions.
 
-  Properties:
+  Stats:
   
   - __currentSize__ - _Number_  
   The current size in bytes.
@@ -167,63 +163,9 @@ Options:
   The elapsed time in seconds.
   - __remainingTime__ - _Number_  
   The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks or because the transfer it's hung up, it returns `undefined`.
-  - __progressBar__ - _String_  
-  The progress bar.
-
-    ```
-    ######··················
-    ```
   
 - __total__ - _Number_  
   The total size of the file. This option is required.
-
----
-
-<a name="format-percentage"></a>
-___module_.format.percentage(percentage) : String__
-
-The percentage must be a number between 0 and 1. Result string length: 4.
-
-```javascript
-console.log (statusBar.format.percentage (0.5));
-// 50%
-```
-
----
-
-<a name="format-speed"></a>
-___module_.format.speed(bytesPerSecond) : String__
-
-Speed in bytes per second. Result string length: 9.
-
-```javascript
-console.log (statusBar.format.speed (30098226));
-//  30.1M/s
-```
-
----
-
-<a name="format-storage"></a>
-___module_.format.storage(bytes) : String__
-
-Result string length: 10.
-
-```javascript
-console.log (statusBar.format.storage (38546744));
-//  36.8 MiB
-```
-
----
-
-<a name="format-time"></a>
-___module_.format.time(seconds) : String__
-
-Result string length: 5 (_min_:_sec_). If `seconds` is undefined it prints `--:--`.
-
-```javascript
-console.log (statusBar.format.time (63));
-//01:03
-```
 
 ---
 
@@ -235,12 +177,23 @@ __Methods__
 - [StatusBar#cancel() : undefined](#statusbar_cancel)
 - [StatusBar#update(chunk) : undefined](#statusbar_update)
 
+__Properties__
+
+- [StatusBar#format : Formatter](#statusbar_format)
+
 ---
 
 <a name="statusbar_cancel"></a>
 __StatusBar#cancel() : undefined__
 
-When you need to cancel the status bar rendering because the file transfer has been aborted due to an error or any other reason, call to this function to clear the timer. This is only needed when the `frequency` option is configured.
+When you need to cancel the rendering of the status bar because the transfer has been aborted due to an error or any other reason, call to this function to clear the timer.
+
+---
+
+<a name="statusbar_format"></a>
+__StatusBar#format : Formatter__
+
+Returns a [Formatter](#formatter) instance.
 
 ---
 
@@ -248,3 +201,76 @@ When you need to cancel the status bar rendering because the file transfer has b
 __StatusBar#update(chunk) : undefined__
 
 Updates the status bar. The `chunk` can be any object with a length property or a simple number.
+
+---
+
+<a name="formatter"></a>
+__Formatter__
+
+__Methods__
+
+- [Formatter#percentage(percentage) : String](#formatter-percentage)
+- [Formatter#progressBar(percentage) : String](#formatter-progressBar)
+- [Formatter#speed(bytesPerSecond) : String](#formatter-speed)
+- [Formatter#storage(bytes) : String](#formatter-storage)
+- [Formatter#time(seconds) : String](#formatter-time)
+
+---
+
+<a name="formatter-percentage"></a>
+__Formatter#percentage(percentage) : String__
+
+The percentage must be a number between 0 and 1. Result string length: 4.
+
+```javascript
+console.log (this.format.percentage (0.5));
+// 50%
+```
+
+---
+
+<a name="formatter-progressbar"></a>
+__Formatter#progressBar(percentage) : String__
+
+The percentage must be a number between 0 and 1. Result string length: the length configured with the option `progressBarLength`.
+
+```javascript
+console.log (this.format.progressBar (0.06));
+//#·······················
+```
+
+---
+
+<a name="formatter-speed"></a>
+__Formatter#speed(bytesPerSecond) : String__
+
+Speed in bytes per second. Result string length: 9.
+
+```javascript
+console.log (this.format.speed (30098226));
+//  30.1M/s
+```
+
+---
+
+<a name="formatter-storage"></a>
+__Formatter#storage(bytes) : String__
+
+Result string length: 10.
+
+```javascript
+console.log (this.format.storage (38546744));
+//  36.8 MiB
+```
+
+---
+
+<a name="formatter-time"></a>
+__Formatter#time(seconds) : String__
+
+Result string length: 5 (_min_:_sec_). If `seconds` is undefined it prints `--:--`.
+
+```javascript
+console.log (this.format.time (63));
+//01:03
+```
