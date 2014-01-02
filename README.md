@@ -49,6 +49,41 @@ stream.pipe (bar);
 - You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
+#### Download example ####
+
+```javascript
+var http = require ("http");
+var statusBar = require ("status-bar");
+
+var url = "http://nodejs.org/dist/latest/node.exe";
+
+http.get (url, function (res){
+	var bar = statusBar.create ({
+		total: res.headers["content-length"],
+		render: function (stats){
+			process.stdout.write (
+					url + " " +
+					this.format.storage (stats.currentSize) + " " +
+					this.format.speed (stats.speed) + " " +
+					this.format.time (stats.remainingTime) + " [" +
+					this.format.progressBar (stats.percentage) + "] " +
+					this.format.percentage (stats.percentage));
+			process.stdout.cursorTo (0);
+		}
+	});
+	
+	res.pipe (bar);
+}).on ("error", function (error){
+	console.error (error);
+});
+```
+
+Prints something similar to this:
+
+```
+http://nodejs.org/dist/latest/node.exe    2.7 MiB  502.4K/s 00:07 [############············]  49%
+```
+
 #### Render function examples ####
 
 - `pacman` from Arch Linux:
