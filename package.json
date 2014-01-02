@@ -10,7 +10,7 @@
     "node": ">=0.10"
   },
   "dependencies": {
-    "progress-bar-formatter": "0.0.x"
+    "progress-bar-formatter": "1.0.x"
   },
   "license": "MIT",
   "main": "lib"
