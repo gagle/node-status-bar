@@ -58,23 +58,23 @@ var statusBar = require ("status-bar");
 var url = "http://nodejs.org/dist/latest/node.exe";
 
 http.get (url, function (res){
-	var bar = statusBar.create ({
-		total: res.headers["content-length"],
-		render: function (stats){
-			process.stdout.write (
-					url + " " +
-					this.format.storage (stats.currentSize) + " " +
-					this.format.speed (stats.speed) + " " +
-					this.format.time (stats.remainingTime) + " [" +
-					this.format.progressBar (stats.percentage) + "] " +
-					this.format.percentage (stats.percentage));
-			process.stdout.cursorTo (0);
-		}
-	});
-	
-	res.pipe (bar);
+  var bar = statusBar.create ({
+    total: res.headers["content-length"],
+    render: function (stats){
+      process.stdout.write (
+          url + " " +
+          this.format.storage (stats.currentSize) + " " +
+          this.format.speed (stats.speed) + " " +
+          this.format.time (stats.remainingTime) + " [" +
+          this.format.progressBar (stats.percentage) + "] " +
+          this.format.percentage (stats.percentage));
+      process.stdout.cursorTo (0);
+    }
+  });
+  
+  res.pipe (bar);
 }).on ("error", function (error){
-	console.error (error);
+  console.error (error);
 });
 ```
 
