@@ -47,8 +47,8 @@ node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]
 
 #### Why you should try this module ####
 
-- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions using the `readline` module under the hood, which is very unstable and may cause problems if you are already using a `readline` instance.
-- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) sending it via websockets or with [node-webkit](https://github.com/rogerwang/node-webkit), etc.
+- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions.
+- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) via websockets or [node-webkit](https://github.com/rogerwang/node-webkit), etc.
 - You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
@@ -140,9 +140,6 @@ Options:
   The character that shows the remaining progress. Default is `·`.
 - __progressBarLength__ - _Number_  
   The length of the progress bar. Default is 24.
-- __render__ - _Function_  
-  Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. 
-  
 - __total__ - _Number_  
   The total size of the file. This option is required.
 
@@ -191,22 +188,22 @@ Arguments: `stats`.
 
 Emitted when the status bar needs to be rendered. All the properties of the `stats` object contain raw data so you need to format them. You can use the default formatting functions.
 
-  Stats:
-  
-  - __currentSize__ - _Number_  
-  The current size in bytes.
-  - __remainingSize__ - _Number_  
-  The remaining size in bytes.
-  - __totalSize__ - _Number_  
-  The total size in bytes.
-  - __percentage__ - _Number_  
-  The progress percentage (current/total size). A number between 0 and 1.
-  - __speed__ - _Number_  
-  The current speed in bytes per second.
-  - __elapsedTime__ - _Number_  
-  The elapsed time in seconds.
-  - __remainingTime__ - _Number_  
-  The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks of data or because the transfer it's hung up, it returns `undefined`.
+Stats:
+
+- __currentSize__ - _Number_  
+The current size in bytes.
+- __remainingSize__ - _Number_  
+The remaining size in bytes.
+- __totalSize__ - _Number_  
+The total size in bytes.
+- __percentage__ - _Number_  
+The progress percentage (current/total size). A number between 0 and 1.
+- __speed__ - _Number_  
+The current speed in bytes per second.
+- __elapsedTime__ - _Number_  
+The elapsed time in seconds.
+- __remainingTime__ - _Number_  
+The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks of data or because the transfer it's hung up, it returns `undefined`.
 
 ---
 
