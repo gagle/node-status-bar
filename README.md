@@ -11,6 +11,7 @@ status-bar
 #### Example ####
 
 ```javascript
+var path = require ("path");
 var http = require ("http");
 var statusBar = require ("status-bar");
 
@@ -21,7 +22,7 @@ http.get (url, function (res){
   bar = statusBar.create ({ total: res.headers["content-length"] })
       .on ("render", function (stats){
         process.stdout.write (
-            url + " " +
+            path.basename (url) + " " +
             this.format.storage (stats.currentSize) + " " +
             this.format.speed (stats.speed) + " " +
             this.format.time (stats.elapsedTime) + " " +
@@ -40,7 +41,7 @@ http.get (url, function (res){
 /*
 It will print something like this:
 
-http://nodejs.org/dist/latest/node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]  51%
+node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]  51%
 */
 ```
 
