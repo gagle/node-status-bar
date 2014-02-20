@@ -8,7 +8,8 @@ var update = 100;
 var bar = statusBar.create ({ total: total });
 
 bar.on ("render", function (stats){
-  process.stdout.write (this.format.storage (stats.currentSize) + " " +
+  process.stdout.write (
+      this.format.storage (stats.currentSize) + " " +
       this.format.speed (stats.speed) + " " +
       this.format.time (stats.elapsedTime) + " " +
       this.format.time (stats.remainingTime) + " [" +
@@ -19,7 +20,7 @@ bar.on ("render", function (stats){
 
 (function again (i){
   setTimeout (function (){
-    bar.write ("a");
+    bar.write (".");
     if (i--) again (i);
   }, update);
 })(total);

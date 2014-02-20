@@ -1,4 +1,4 @@
-v2.0.0 (xx Feb 2014)
+v2.0.0 (20 Feb 2014)
   Removed "update()". It was stupid because you can do the same with "write()"
     because the bar is a writable stream. This implies that you cannot update
     the bar with a number, you need to pass the chunk to the "write()" function.
@@ -6,6 +6,9 @@ v2.0.0 (xx Feb 2014)
   Replaced the "render" and "finish" callbacks by events.
   Added "hangup" event.
   When the size was 0 the "finish" callback was not triggered.
+  Improved current speed with up to 3 smoothing factors.
+  Improved the estimated remaining time. It now uses the average speed rather
+    than the current speed.
 
 v1.1.1 (02 Jan 2014)
   Fixed the "format.time()" function when the remaining time was higher than an

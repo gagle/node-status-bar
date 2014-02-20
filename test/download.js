@@ -10,9 +10,9 @@ http.get (url, function (res){
   bar = statusBar.create ({ total: res.headers["content-length"] })
       .on ("render", function (stats){
         process.stdout.write (
-            url + " " +
             this.format.storage (stats.currentSize) + " " +
             this.format.speed (stats.speed) + " " +
+            this.format.time (stats.elapsedTime) + " " +
             this.format.time (stats.remainingTime) + " [" +
             this.format.progressBar (stats.percentage) + "] " +
             this.format.percentage (stats.percentage));

@@ -11,85 +11,52 @@ status-bar
 #### Example ####
 
 ```javascript
-var statusBar = require ("status-bar");
-
-var bar = statusBar.create ({
-  //Total file size
-  total: size,
-  //Render function
-  render: function (stats){
-    //Print the status bar as you like
-    process.stdout.write (filename + " " + 
-        this.format.storage (stats.currentSize) + " " +
-        this.format.speed (stats.speed) + " " +
-        this.format.time (stats.remainingTime) + " [" +
-        this.format.progressBar (stats.percentage) + "] " +
-        this.format.percentage (stats.percentage));
-    process.stdout.cursorTo (0);
-  }
-});
-
-//Update the status bar when you send or receive a chunk of a file
-obj.on ("some-event", function (chunk){
-  //You can pass any object that contains a length property or a simple number
-  bar.update (chunk);
-});
-
-//Or simply pipe() things to it!
-stream.pipe (bar);
-
-//It will print something like this
-//a-file                  17.8 MiB   23.6M/s 00:13 [#·······················]   6%
-```
-
-#### Why you should try this module ####
-
-- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions with the `readline` module, which is very unstable and may cause problems if you are already using a `readline` instance.
-- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) sending it via websockets or with [node-webkit](https://github.com/rogerwang/node-webkit), etc.
-- You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
-- It is very easy to use. Just `pipe()` things to it!
-
-#### Download example ####
-
-```javascript
 var http = require ("http");
 var statusBar = require ("status-bar");
 
 var url = "http://nodejs.org/dist/latest/node.exe";
+var bar;
 
 http.get (url, function (res){
-  var bar = statusBar.create ({
-    total: res.headers["content-length"],
-    render: function (stats){
-      process.stdout.write (
-          url + " " +
-          this.format.storage (stats.currentSize) + " " +
-          this.format.speed (stats.speed) + " " +
-          this.format.time (stats.remainingTime) + " [" +
-          this.format.progressBar (stats.percentage) + "] " +
-          this.format.percentage (stats.percentage));
-      process.stdout.cursorTo (0);
-    }
-  });
+  bar = statusBar.create ({ total: res.headers["content-length"] })
+      .on ("render", function (stats){
+        process.stdout.write (
+            url + " " +
+            this.format.storage (stats.currentSize) + " " +
+            this.format.speed (stats.speed) + " " +
+            this.format.time (stats.elapsedTime) + " " +
+            this.format.time (stats.remainingTime) + " [" +
+            this.format.progressBar (stats.percentage) + "] " +
+            this.format.percentage (stats.percentage));
+        process.stdout.cursorTo (0);
+      });
   
   res.pipe (bar);
 }).on ("error", function (error){
+  bar.cancel ();
   console.error (error);
 });
+
+/*
+It will print something like this:
+
+http://nodejs.org/dist/latest/node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]  51%
+*/
 ```
 
-Prints something similar to this:
+#### Why you should try this module ####
 
-```
-http://nodejs.org/dist/latest/node.exe    2.7 MiB  502.4K/s 00:07 [############············]  49%
-```
+- It doesn't print anything, it just calculates and returns raw data and provides default formatting functions. Other modules similar to this force you to use their own formatting functions using the `readline` module under the hood, which is very unstable and may cause problems if you are already using a `readline` instance.
+- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) sending it via websockets or with [node-webkit](https://github.com/rogerwang/node-webkit), etc.
+- You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
+- It is very easy to use. Just `pipe()` things to it!
 
 #### Render function examples ####
 
 - `pacman` from Arch Linux:
   
   ```
-  a-file                  17.8 MiB   23.6M/s 00:13 [#·······················]   6%
+  a-file                  21.8 MiB   67.9M/s 00:03 [#####···················]  22%
   ```
 
   ```javascript
@@ -111,20 +78,18 @@ http://nodejs.org/dist/latest/node.exe    2.7 MiB  502.4K/s 00:07 [############�
   
   filename = formatFilename (filename);
   
-  var render = function (stats){
-    process.stdout.write (filename + " " + 
-        this.format.storage (stats.currentSize) + " " +
-        this.format.speed (stats.speed) + " " +
-        this.format.time (stats.remainingTime) + " [" +
-        this.format.progressBar (stats.percentage) + "] " +
-        this.format.percentage (stats.percentage));
-    process.stdout.cursorTo (0);
-  };
-  
-  var bar = statusBar.create ({
-    total: ...,
-    render: render
-  });
+  var bar = statusBar.create ({ total: ... })
+      .on ("render", function (stats){
+        process.stdout.write (filename + " " + 
+            this.format.storage (stats.currentSize) + " " +
+            this.format.speed (stats.speed) + " " +
+            this.format.time (stats.remainingTime) + " [" +
+            this.format.progressBar (stats.percentage) + "] " +
+            this.format.percentage (stats.percentage));
+        process.stdout.cursorTo (0);
+      });
+      
+  readableStream.pipe (bar);
   ```
 
 - `git clone`:
@@ -136,20 +101,17 @@ http://nodejs.org/dist/latest/node.exe    2.7 MiB  502.4K/s 00:07 [############�
   ```javascript
   var statusBar = require ("status-bar");
   
-  var render = function (stats){
-    process.stdout.write ("Receiving objects: " +
-        this.format.percentage (stats.percentage).trim () +
-        " (" + stats.currentSize + "/" + stats.totalSize + "), " +
-        this.format.storage (stats.currentSize).trim () + " | " +
-        this.format.speed (stats.speed).trim ());
-    process.stdout.cursorTo (0);
-  };
+  var bar = statusBar.create ({ total: ...})
+      .on ("render", function (stats){
+        process.stdout.write ("Receiving objects: " +
+            this.format.percentage (stats.percentage).trim () +
+            " (" + stats.currentSize + "/" + stats.totalSize + "), " +
+            this.format.storage (stats.currentSize).trim () + " | " +
+            this.format.speed (stats.speed).trim ());
+        process.stdout.cursorTo (0);
+      });
   
-  
-  var bar = statusBar.create ({
-    total: ...,
-    render: render
-  });
+  readableStream.pipe (bar);
   ```
 
 #### Functions ####
@@ -169,8 +131,6 @@ Returns a new [StatusBar](#statusbar_object) instance.
 
 Options:
 
-- __finish__ - _Function_  
-	Function that is called when the file transfer has finished.
 - __frequency__ - _Number_  
   The rendering frequency in milliseconds. It must be a positive value. Default is 200.
 - __progressBarComplete__ - _String_  
@@ -180,24 +140,7 @@ Options:
 - __progressBarLength__ - _Number_  
   The length of the progress bar. Default is 24.
 - __render__ - _Function_  
-	Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. All of its properties contain raw data, so you need to format them. You can use the default formatting functions.
-
-  Stats:
-  
-  - __currentSize__ - _Number_  
-  The current size in bytes.
-  - __remainingSize__ - _Number_  
-  The remaining size in bytes.
-  - __totalSize__ - _Number_  
-  The total size in bytes.
-  - __percentage__ - _Number_  
-  The complete percentage. A number between 0 and 1.
-  - __speed__ - _Number_  
-  The estimated current speed in bytes per second.
-  - __elapsedTime__ - _Number_  
-  The elapsed time in seconds.
-  - __remainingTime__ - _Number_  
-  The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks or because the transfer it's hung up, it returns `undefined`.
+  Function that is called when the status bar needs to be printed. It is required. It receives the stats object as an argument. 
   
 - __total__ - _Number_  
   The total size of the file. This option is required.
@@ -206,6 +149,14 @@ Options:
 
 <a name="statusbar_object"></a>
 __StatusBar__
+
+The `StatusBar` object inherits from a writable stream.
+
+__Events__
+
+- [finish](#event_finish)
+- [hangup](#event_hangup)
+- [render](#event_render)
 
 __Methods__
 
@@ -218,10 +169,50 @@ __Properties__
 
 ---
 
+<a name="event_finish"></a>
+__finish__
+
+Arguments: none.
+
+Emitted when the transfer finishes.
+
+<a name="event_hangup"></a>
+__hangup__
+
+Arguments: none.
+
+Emitted when the transfer hangs up (3 seconds without receiving data). Can be emitted multiple times.
+
+<a name="event_render"></a>
+__render__
+
+Arguments: `stats`.
+
+Emitted when the status bar needs to be rendered. All the properties of the `stats` object contain raw data so you need to format them. You can use the default formatting functions.
+
+  Stats:
+  
+  - __currentSize__ - _Number_  
+  The current size in bytes.
+  - __remainingSize__ - _Number_  
+  The remaining size in bytes.
+  - __totalSize__ - _Number_  
+  The total size in bytes.
+  - __percentage__ - _Number_  
+  The progress percentage (current/total size). A number between 0 and 1.
+  - __speed__ - _Number_  
+  The current speed in bytes per second.
+  - __elapsedTime__ - _Number_  
+  The elapsed time in seconds.
+  - __remainingTime__ - _Number_  
+  The estimated remaining time in seconds. If the remaining time cannot be estimated because the status bar needs at least 2 chunks of data or because the transfer it's hung up, it returns `undefined`.
+
+---
+
 <a name="statusbar_cancel"></a>
 __StatusBar#cancel() : undefined__
 
-When you need to cancel the rendering of the status bar because the transfer has been aborted due to an error or any other reason, call to this function to clear the timer.
+When you need to cancel the rendering of the status bar because the transfer has been aborted due to an error or any other reason, call to this function to clear the internal timers.
 
 ---
 
@@ -229,13 +220,6 @@ When you need to cancel the rendering of the status bar because the transfer has
 __StatusBar#format : Formatter__
 
 Returns a [Formatter](#formatter) instance.
-
----
-
-<a name="statusbar_update"></a>
-__StatusBar#update(chunk) : undefined__
-
-Updates the status bar. The `chunk` can be any object with a length property or a simple number.
 
 ---
 
@@ -277,9 +261,9 @@ console.log (this.format.progressBar (0.06));
 ---
 
 <a name="formatter-speed"></a>
-__Formatter#speed(bytesPerSecond) : String__
+__Formatter#speed(bytesPerSecond[, decimals]) : String__
 
-Speed in bytes per second. Result string length: 9.
+By default it shows 1 decimal. Result string length: 8 + #decimals.
 
 ```javascript
 console.log (this.format.speed (30098226));
@@ -289,9 +273,9 @@ console.log (this.format.speed (30098226));
 ---
 
 <a name="formatter-storage"></a>
-__Formatter#storage(bytes) : String__
+__Formatter#storage(bytes[, decimals]) : String__
 
-Result string length: 10.
+By default it shows 1 decimal. Result string length: 9 + #decimals.
 
 ```javascript
 console.log (this.format.storage (38546744));
