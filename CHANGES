@@ -1,3 +1,6 @@
+v2.0.1 (27 Feb 2014)
+  Fixed size calculation for file size bigger than 2^31 bytes (2GB).
+
 v2.0.0 (20 Feb 2014)
   Removed "update()". It was stupid because you can do the same with "write()"
     because the bar is a writable stream. This implies that you cannot update
