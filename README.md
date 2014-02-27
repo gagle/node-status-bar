@@ -159,7 +159,7 @@ __Events__
 __Methods__
 
 - [StatusBar#cancel() : undefined](#statusbar_cancel)
-- [StatusBar#update(chunk) : undefined](#statusbar_update)
+- [StatusBar#write(chunk) : undefined](#statusbar_write)
 
 __Properties__
 
