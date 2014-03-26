@@ -34,7 +34,7 @@ http.get (url, function (res){
   
   res.pipe (bar);
 }).on ("error", function (error){
-  bar.cancel ();
+  if (bar) bar.cancel ();
   console.error (error);
 });
 
