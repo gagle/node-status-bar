@@ -1,3 +1,6 @@
+v2.0.2 (30 Oct 2014)
+  Bump version.
+
 v2.0.1 (27 Feb 2014)
   Fixed size calculation for file size bigger than 2^31 bytes (2GB).
 
