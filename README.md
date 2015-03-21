@@ -3,39 +3,37 @@ status-bar
 
 #### A status bar for file transfers ####
 
-[![NPM version](https://badge.fury.io/js/status-bar.png)](http://badge.fury.io/js/status-bar "Fury Version Badge")
-[![Dependency Status](https://david-dm.org/gagle/node-status-bar.png)](https://david-dm.org/gagle/node-status-bar "David Dependency Manager Badge")
-
-[![NPM installation](https://nodei.co/npm/status-bar.png?mini=true)](https://nodei.co/npm/status-bar "NodeICO Badge")
+[![npm][npm-image]][npm-url]
+[![david][david-image]][david-url]
 
 #### Example ####
 
 ```javascript
-var path = require ("path");
-var http = require ("http");
-var statusBar = require ("status-bar");
+var path = require('path');
+var http = require('http');
+var statusBar = require('status-bar');
 
-var url = "http://nodejs.org/dist/latest/node.exe";
+var url = 'http://nodejs.org/dist/latest/node.exe';
 var bar;
 
-http.get (url, function (res){
-  bar = statusBar.create ({ total: res.headers["content-length"] })
-      .on ("render", function (stats){
-        process.stdout.write (
-            path.basename (url) + " " +
-            this.format.storage (stats.currentSize) + " " +
-            this.format.speed (stats.speed) + " " +
-            this.format.time (stats.elapsedTime) + " " +
-            this.format.time (stats.remainingTime) + " [" +
-            this.format.progressBar (stats.percentage) + "] " +
-            this.format.percentage (stats.percentage));
-        process.stdout.cursorTo (0);
+http.get(url, function (res) {
+  bar = statusBar.create({ total: res.headers['content-length'] })
+      .on('render', function (stats) {
+        process.stdout.write(
+            path.basename(url) + ' ' +
+            this.format.storage(stats.currentSize) + ' ' +
+            this.format.speed(stats.speed) + ' ' +
+            this.format.time(stats.elapsedTime) + ' ' +
+            this.format.time(stats.remainingTime) + ' [' +
+            this.format.progressBar(stats.percentage) + '] ' +
+            this.format.percentage(stats.percentage));
+        process.stdout.cursorTo(0);
       });
   
-  res.pipe (bar);
-}).on ("error", function (error){
-  if (bar) bar.cancel ();
-  console.error (error);
+  res.pipe(bar);
+}).on('error', function (err) {
+  if (bar) bar.cancel();
+  console.error(err);
 });
 
 /*
@@ -48,7 +46,7 @@ node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]
 #### Why you should try this module ####
 
 - It doesn't print anything, it just calculates and returns raw data and provides default formatting functions.
-- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) via websockets or [node-webkit](https://github.com/rogerwang/node-webkit), etc.
+- The status bar can be displayed wherever you want, it is simply a string, so you can render it in the console, in HTML (probably with your own progress bar) via websockets or [NW.js][nwjs], etc.
 - You decide how to format and arrange the elements. The default formatting functions have a fixed length, so you can format the status bar very easily.
 - It is very easy to use. Just `pipe()` things to it!
 
@@ -61,36 +59,36 @@ node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]
   ```
 
   ```javascript
-  var statusBar = require ("status-bar");
+  var statusBar = require('status-bar');
   
-  var formatFilename = function (filename){
+  var formatFilename = function (filename) {
     //80 - 59
     var filenameMaxLength = 21;
-    if (filename.length > filenameMaxLength){
-      filename = filename.slice (0, filenameMaxLength - 3) + "...";
-    }else{
+    if (filename.length > filenameMaxLength) {
+      filename = filename.slice(0, filenameMaxLength - 3) + '...';
+    } else {
       var remaining = filenameMaxLength - filename.length;
-      while (remaining--){
-        filename += " ";
+      while (remaining--) {
+        filename += ' ';
       }
     }
     return filename;
   };
   
-  filename = formatFilename (filename);
+  filename = formatFilename(filename);
   
-  var bar = statusBar.create ({ total: ... })
-      .on ("render", function (stats){
-        process.stdout.write (filename + " " + 
-            this.format.storage (stats.currentSize) + " " +
-            this.format.speed (stats.speed) + " " +
-            this.format.time (stats.remainingTime) + " [" +
-            this.format.progressBar (stats.percentage) + "] " +
-            this.format.percentage (stats.percentage));
-        process.stdout.cursorTo (0);
+  var bar = statusBar.create({ total: ... })
+      .on('render', function (stats) {
+        process.stdout.write(filename + ' ' + 
+            this.format.storage(stats.currentSize) + ' ' +
+            this.format.speed(stats.speed) + ' ' +
+            this.format.time(stats.remainingTime) + ' [' +
+            this.format.progressBar(stats.percentage) + '] ' +
+            this.format.percentage(stats.percentage));
+        process.stdout.cursorTo(0);
       });
       
-  readableStream.pipe (bar);
+  readableStream.pipe(bar);
   ```
 
 - `git clone`:
@@ -100,19 +98,19 @@ node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]
   ```
 
   ```javascript
-  var statusBar = require ("status-bar");
+  var statusBar = require('status-bar');
   
-  var bar = statusBar.create ({ total: ...})
-      .on ("render", function (stats){
-        process.stdout.write ("Receiving objects: " +
-            this.format.percentage (stats.percentage).trim () +
-            " (" + stats.currentSize + "/" + stats.totalSize + "), " +
-            this.format.storage (stats.currentSize).trim () + " | " +
-            this.format.speed (stats.speed).trim ());
-        process.stdout.cursorTo (0);
+  var bar = statusBar.create({ total: ...})
+      .on('render', function (stats) {
+        process.stdout.write('Receiving objects: ' +
+            this.format.percentage(stats.percentage).trim() +
+            ' (' + stats.currentSize + '/' + stats.totalSize + '), ' +
+            this.format.storage(stats.currentSize).trim() + ' | ' +
+            this.format.speed(stats.speed).trim());
+        process.stdout.cursorTo(0);
       });
   
-  readableStream.pipe (bar);
+  readableStream.pipe(bar);
   ```
 
 #### Functions ####
@@ -239,8 +237,10 @@ __Formatter#percentage(percentage) : String__
 The percentage must be a number between 0 and 1. Result string length: 4.
 
 ```javascript
-console.log (this.format.percentage (0.5));
-// 50%
+console.log(this.format.percentage(0.5));
+/*
+50%
+ */
 ```
 
 ---
@@ -251,8 +251,10 @@ __Formatter#progressBar(percentage) : String__
 The percentage must be a number between 0 and 1. Result string length: the length configured with the option `progressBarLength`.
 
 ```javascript
-console.log (this.format.progressBar (0.06));
-//#·······················
+console.log(this.format.progressBar(0.06));
+/*
+#·······················
+ */
 ```
 
 ---
@@ -263,8 +265,10 @@ __Formatter#speed(bytesPerSecond[, decimals]) : String__
 By default it shows 1 decimal. Result string length: 8 + #decimals.
 
 ```javascript
-console.log (this.format.speed (30098226));
-//  30.1M/s
+console.log(this.format.speed(30098226));
+/*
+  30.1M/s
+ */
 ```
 
 ---
@@ -275,8 +279,10 @@ __Formatter#storage(bytes[, decimals]) : String__
 By default it shows 1 decimal. Result string length: 9 + #decimals.
 
 ```javascript
-console.log (this.format.storage (38546744));
-//  36.8 MiB
+console.log(this.format.storage(38546744));
+/*
+  36.8 MiB
+ */
 ```
 
 ---
@@ -287,6 +293,14 @@ __Formatter#time(seconds) : String__
 Result string length: 5 (_min_:_sec_). If `seconds` is undefined it prints `--:--`.
 
 ```javascript
-console.log (this.format.time (63));
-//01:03
+console.log(this.format.time(63));
+/*
+01:03
+ */
 ```
+
+[npm-image]: https://img.shields.io/npm/v/status-bar.svg?style=flat
+[npm-url]: https://npmjs.org/package/status-bar
+[david-image]: https://img.shields.io/david/gagle/node-status-bar.svg?style=flat
+[david-url]: https://david-dm.org/gagle/node-status-bar
+[nwjs]: https://github.com/nwjs/nw.js

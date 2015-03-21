@@ -20,7 +20,7 @@ http.get(url, function (res) {
       });
 
   res.pipe(bar);
-}).on('error', function (error) {
+}).on('error', function (err) {
   if (bar) bar.cancel();
-  console.error(error);
+  console.error(err);
 });
