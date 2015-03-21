@@ -2,15 +2,22 @@
   "name": "status-bar",
   "version": "2.0.2",
   "description": "A status bar for file transfers",
-  "keywords": ["status", "bar", "file", "transfer", "speed", "progress",
-      "stream"],
+  "keywords": [
+    "status",
+    "bar",
+    "file",
+    "transfer",
+    "speed",
+    "progress",
+    "stream"
+  ],
   "author": "Gabriel Llamas <gagle@outlook.com>",
   "repository": "git://github.com/gagle/node-status-bar.git",
   "engines": {
     "node": ">=0.10"
   },
   "dependencies": {
-    "progress-bar-formatter": "1.0.x"
+    "progress-bar-formatter": "^2.0.1"
   },
   "license": "MIT",
   "main": "lib"
