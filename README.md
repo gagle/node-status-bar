@@ -100,7 +100,7 @@ node.exe    2.8 MiB  617.5K/s 00:06 00:07 [############············]
   ```javascript
   var statusBar = require('status-bar');
   
-  var bar = statusBar.create({ total: ...})
+  var bar = statusBar.create({ total: ... })
       .on('render', function (stats) {
         process.stdout.write('Receiving objects: ' +
             this.format.percentage(stats.percentage).trim() +
